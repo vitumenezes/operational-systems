@@ -1,4 +1,8 @@
-import psutil, pprint, time, os
+import psutil
+import pprint
+import time
+import os
+import signal
 
 def getListOfProcessSortedByMemory():
     '''
@@ -22,16 +26,40 @@ def getListOfProcessSortedByMemory():
 
     return listOfProcObjects
 
+def getProcess():
+    '''
+    Imprime na tela os processos em execucao
+    '''
+    # lista de processos
+    listOfRunningProcess = getListOfProcessSortedByMemory()
+
+    listProc = (elem for elem in listOfRunningProcess if elem['name'] == 'python3')
+
+    os.system('clear')
+    signal.signal(signal.SIGCHLD, signal.SIG_IGN)
+    print('MEMORYUSAGE\tPID\tUSERNAME\tNAME')
+    for elem in listProc:
+        print(elem['vms'], '\t', elem['pid'], '\t', elem['username'], '\t', elem['name'])
+
+    killProcess()
+
+def killProcess():
+    process = input('Digite o PID do processo:')
+    os.kill(int(process), signal.SIGKILL)
+    getProcess()
+
+def processFunc():
+    while True:
+        pass
 
 def main():
-    while True:
-        listOfRunningProcess = getListOfProcessSortedByMemory()
-        print('MEMORYUSAGE\tPID\tUSERNAME\tNAME')
-        for elem in listOfRunningProcess[:15] :
-            print(elem['vms'], '\t', elem['pid'], '\t', elem['username'], '\t', elem['name'])
-        time.sleep(1)
-        os.system('clear')
-
+    pid = os.fork()
+    if pid < 0:
+        print("Erro")
+    elif pid > 0:
+        getProcess()
+    else:
+        processFunc()
 
 if __name__ == '__main__':
     main()
