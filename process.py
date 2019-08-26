@@ -23,8 +23,8 @@ def getListOfProcessSortedByMemory():
 
     # Sort list of dict by key vms i.e. memory usage
     listOfProcObjects = sorted(listOfProcObjects, key=lambda procObj: procObj['vms'], reverse=True)
-
     return listOfProcObjects
+
 
 def getProcess():
     '''
@@ -40,17 +40,24 @@ def getProcess():
     print('MEMORYUSAGE\tPID\tUSERNAME\tNAME')
     for elem in listProc:
         print(elem['vms'], '\t', elem['pid'], '\t', elem['username'], '\t', elem['name'])
+    # killProcess()
 
-    killProcess()
 
 def killProcess():
-    process = input('Digite o PID do processo:')
+    process = input('\nDigite o PID do processo:')
     os.kill(int(process), signal.SIGKILL)
     getProcess()
 
+
 def processFunc():
-    while True:
-        pass
+    for i in range(2):
+        time.sleep(2)
+        pid = os.fork()
+        if pid > 0:
+            continue
+        else:
+            processFunc()
+
 
 def main():
     pid = os.fork()
@@ -61,5 +68,10 @@ def main():
     else:
         processFunc()
 
+
 if __name__ == '__main__':
+    getProcess()
     main()
+    while True:
+        time.sleep(1)
+        getProcess()
