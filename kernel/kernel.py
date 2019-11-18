@@ -1,5 +1,5 @@
 import time
-import random
+from random import randrange
 from threading import Thread, Lock
 
 
@@ -25,11 +25,10 @@ def priority_schedule(lock):
         else:
             empty_memory = False
 
-        process_time = memory[0][3]
-        process_index = 0
-
-        for i in range(len(memory)):
-            if memory[i][3] < process_time:
+        process= memory[0]
+        
+        for proc in memory:
+            if proc[] < process_time:
                 process_time = memory[i][3]
                 process_index = i
 
@@ -110,20 +109,31 @@ def memory_manager(lock):
     watch_memory(lock)
 
 
-def get_processes():
+def get_processes(lock):
     '''
     Imprime na tela os processos em execucao
     '''
+    lock.acquire()
     print('PID\tNAME\tQUANTUM\tPRIORITY\tSIZE')
+    
     for proc in memory:
-        print(proc[0], '\t', proc[1], '\t', proc[2]], '\t', proc[3], '\t', proc[4])
+        print(proc[0], '\t', proc[1], '\t', proc[2], '\t', proc[3], '\t', proc[4])
+
+    lock.release()
 
 
-def add_processes():
+def add_processes(lock):
     print("Quantos processos deseja adicionar?")
     num_processes = input()
 
+    process = str(randrange(100)+' '+1+' '+randrange(10)+' '+randrange(3)+''+randrange(10))
 
+    lock.acquire()
+
+    with open('hdd.txt', 'a') as hd:
+        hd.write(processes)
+
+    lock.release()
 
 
 def main(lock):
@@ -132,11 +142,11 @@ def main(lock):
 
     while (not empty_file or not empty_memory):
         print("\nSelecione a opção desejada:")
-        print("1 - Mostrar processos em execução\nAdicionar mais processos\n\nSua opcção: ")
+        print("1 - Mostrar processos em execução\n2 - Adicionar mais processos\n\nSua opção: ")
         opc = input()
 
         if opc == '1':
-            get_processes()
+            get_processes(lock)
         elif opc == '2':
             add_processes(lock)
         else:
